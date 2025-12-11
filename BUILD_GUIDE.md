@@ -108,3 +108,104 @@ Sau khi build, test EXE:
 - Bình thường, build có thể mất 2-5 phút
 - Nếu quá lâu, kiểm tra antivirus có block không
 
+---
+
+# Hướng Dẫn Build Data Editor EXE
+
+## Cách 1: Sử dụng file build_data_editor.bat (Đơn giản nhất)
+
+1. **Chạy file build_data_editor.bat:**
+   ```cmd
+   build_data_editor.bat
+   ```
+
+2. **File EXE sẽ được tạo tại:** `dist\DataEditor.exe`
+
+## Cách 2: Build thủ công với PyInstaller
+
+### Bước 1: Cài đặt PyInstaller
+```cmd
+pip install pyinstaller
+```
+
+### Bước 2: Build EXE
+```cmd
+pyinstaller --name=ChangeContentAdsFB --onefile --noconsole --windowed data_editor.py
+```
+
+Hoặc sử dụng spec file:
+```cmd
+pyinstaller DataEditor.spec
+```
+
+### Giải thích các tham số:
+- `--onefile`: Tạo file EXE duy nhất (không có thư mục phụ)
+- `--noconsole`: Ẩn terminal window (GUI app không cần console)
+- `--windowed`: Chế độ GUI (tương đương --noconsole trên Windows)
+
+## Lưu ý quan trọng:
+
+### 1. File cần thiết khi chạy EXE:
+- `data.json` - **BẮT BUỘC** - Phải có trong cùng thư mục với EXE (KHÔNG được bundle vào EXE để có thể chỉnh sửa)
+
+**Quan trọng:** File `data.json` sẽ được đọc từ thư mục hiện tại (cùng thư mục với EXE), không phải từ bundle. Điều này cho phép bạn chỉnh sửa file `data.json` để config campaigns, adsetsOption, adsOption mà không cần build lại EXE.
+
+### 2. Dependencies:
+Data Editor chỉ sử dụng các thư viện built-in của Python:
+- `tkinter` - GUI framework (built-in)
+- `json` - JSON handling (built-in)
+- `os`, `sys` - System utilities (built-in)
+
+**Không cần cài đặt thêm dependencies nào!**
+
+### 3. Xử lý lỗi thường gặp:
+
+**Lỗi: ModuleNotFoundError cho tkinter**
+- Trên Windows: Tkinter thường đã được cài sẵn với Python
+- Nếu thiếu: Cài đặt lại Python với option "tcl/tk and IDLE"
+
+**Lỗi: FileNotFoundError khi chạy EXE**
+- Đảm bảo file `data.json` có trong cùng thư mục với EXE
+- File `data.json` KHÔNG được bundle vào EXE để có thể config bên ngoài
+
+**Lỗi: EXE không mở cửa sổ GUI**
+- Thử build với `--console` để xem lỗi:
+  ```cmd
+  pyinstaller --name=DataEditor --onefile --console data_editor.py
+  ```
+
+### 4. Tối ưu kích thước EXE:
+
+Data Editor EXE thường nhỏ hơn nhiều so với PlaywrightInject vì:
+- Chỉ dùng thư viện built-in
+- Không cần bundle browsers
+- Không cần external dependencies
+
+Kích thước thường: **5-15 MB**
+
+### 5. Test EXE:
+
+Sau khi build, test EXE:
+1. Copy EXE vào thư mục mới
+2. Copy file `data.json` vào cùng thư mục
+3. Chạy EXE và kiểm tra:
+   - GUI mở được không
+   - Có thể load/save data.json không
+   - Các chức năng thêm/sửa/xóa hoạt động không
+
+## Troubleshooting:
+
+### EXE không chạy hoặc bị Windows Defender block:
+- Thêm exception trong Windows Defender
+- Chạy với quyền Administrator
+- Kiểm tra file log (nếu có)
+
+### EXE chạy nhưng không hiển thị GUI:
+- Kiểm tra file `data.json` có trong cùng thư mục không
+- Thử build với `--console` để xem lỗi
+- Kiểm tra Python version (nên dùng Python 3.8+)
+
+### Build quá lâu:
+- Data Editor build nhanh hơn nhiều (thường < 1 phút)
+- Nếu quá lâu, kiểm tra antivirus có block không
+
